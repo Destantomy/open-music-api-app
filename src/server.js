@@ -3,6 +3,7 @@ const Hapi = require('@hapi/hapi');
 // plugin-album
 const albums = require('./api/albums');
 const AlbumsService = require('./services/inMemory/AlbumsService');
+const AlbumsValidator = require('./validator/albums');
 // plugin-songs
 const songs = require('./api/songs');
 const SongsService = require('./services/inMemory/SongsService');
@@ -25,6 +26,7 @@ const init = async () => {
     plugin: albums,
     options: {
       service: albumsService,
+      validator: AlbumsValidator,
     },
   });
 
