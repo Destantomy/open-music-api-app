@@ -7,6 +7,7 @@ const AlbumsValidator = require('./validator/albums');
 // plugin-songs
 const songs = require('./api/songs');
 const SongsService = require('./services/inMemory/SongsService');
+const SongValidator = require('./validator/songs');
 
 const init = async () => {
   const albumsService = new AlbumsService();
@@ -34,6 +35,7 @@ const init = async () => {
     plugin: songs,
     options: {
       service: songsService,
+      validator: SongValidator,
     },
   });
 

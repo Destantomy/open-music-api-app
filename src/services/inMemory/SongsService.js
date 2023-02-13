@@ -1,5 +1,8 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-underscore-dangle */
 const { nanoid } = require('nanoid');
+const InvariantError = require('../../exceptions/InvariantError');
+const NotFoundError = require('../../exceptions/NotFoundError');
 
 class SongsService {
   constructor() {
@@ -7,16 +10,16 @@ class SongsService {
   }
 
   addSong({
-    title, year, genre, performer, duration,
+    title, year, genre, performer, duration, albumId,
   }) {
     const id = nanoid(16);
     const newSong = {
-      title, year, genre, performer, duration, id,
+      id, title, year, genre, performer, duration, albumId,
     };
     this._songs.push(newSong);
     const isSuccess = this._songs.filter((song) => song.id === id).length > 0;
     if (!isSuccess) {
-      throw new Error('Gagal menambahkan data lagu.');
+      throw new InvariantError('Gagal menambahkan data lagu.');
     }
     return id;
   }
@@ -28,17 +31,17 @@ class SongsService {
   getSongById(id) {
     const song = this._songs.filter((s) => s.id === id)[0];
     if (!song) {
-      throw new Error('Song tidak ditemukan');
+      throw new NotFoundError('Song tidak ditemukan');
     }
     return song;
   }
 
   editSongById(id, {
-    title, year, genre, performer, duration,
+    title, year, genre, performer, duration, albumId,
   }) {
     const index = this._songs.findIndex((song) => song.id === id);
     if (index === -1) {
-      throw new Error('Gagal memperbarui lagu. Id lagu tidak ditemukan.');
+      throw new NotFoundError('Gagal memperbarui lagu. Id lagu tidak ditemukan.');
     }
     this._songs[index] = {
       ...this._songs[index],
@@ -47,13 +50,14 @@ class SongsService {
       genre,
       performer,
       duration,
+      albumId,
     };
   }
 
   deleteSongById(id) {
     const index = this._songs.findIndex((song) => song.id === id);
     if (index === -1) {
-      throw new Error('Lagu gagal dihapus. Id lagu tidak ditemukan');
+      throw new NotFoundError('Lagu gagal dihapus. Id lagu tidak ditemukan');
     }
     this._songs.splice(index, 1);
   }
