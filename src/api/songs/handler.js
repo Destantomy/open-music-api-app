@@ -19,7 +19,7 @@ class Songshandler {
       this._validator.validateSongPayload(request.payload);
 
       const {
-        title = 'untitled', year, genre, performer, duration, albumId,
+        title, year, genre, performer, duration, albumId,
       } = request.payload;
       const songId = this._service.addSong({
         title, year, genre, performer, duration, albumId,
