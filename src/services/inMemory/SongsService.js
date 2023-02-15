@@ -47,8 +47,8 @@ class SongsService {
       ...this._songs[index],
       title,
       year,
-      genre,
       performer,
+      genre,
       duration,
       albumId,
     };

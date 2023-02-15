@@ -8,7 +8,7 @@ const AlbumsService = require('./services/postgres/AlbumsService');
 const AlbumsValidator = require('./validator/albums');
 // plugin-songs
 const songs = require('./api/songs');
-const SongsService = require('./services/inMemory/SongsService');
+const SongsService = require('./services/postgres/SongsService');
 const SongValidator = require('./validator/songs');
 
 const init = async () => {
