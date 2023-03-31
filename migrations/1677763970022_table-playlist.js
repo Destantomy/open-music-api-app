@@ -13,11 +13,8 @@ exports.up = pgm => {
     name: {
       type: 'TEXT',
     },
-    username: {
-      type: 'TEXT',
-    },
     owner: {
-      type: 'TEXT',
+      type: 'VARCHAR(50)',
     },
   });
 };
