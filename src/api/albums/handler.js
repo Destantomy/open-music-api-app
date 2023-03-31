@@ -19,9 +19,8 @@ class AlbumsHandler {
   async postAlbumHandler(request, h) {
     try {
       this._validator.validateAlbumPayload(request.payload);
-
-      const { name, year } = request.payload;
-      const albumId = await this._service.addAlbum({ name, year });
+      const { name, year, cover } = request.payload;
+      const albumId = await this._service.addAlbum({ name, year, cover });
       const response = h.response({
         status: 'success',
         message: 'Album berhasil ditambahkan.',

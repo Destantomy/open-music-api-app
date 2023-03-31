@@ -1,7 +1,12 @@
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable camelcase */
 /* eslint-disable no-console */
 require('dotenv').config();
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
+const Inert = require('@hapi/inert');
+const path = require('path');
+
 // plugin-users
 const users = require('./api/users');
 const UsersService = require('./services/postgres/UsersService');
@@ -23,13 +28,33 @@ const SongValidator = require('./validator/songs');
 const playlist = require('./api/playlist');
 const PlaylistService = require('./services/postgres/PlaylistService');
 const PlaylistValidator = require('./validator/playlist');
+// plugin-playlistSongs
+const playlistSongs = require('./api/playlistsongs');
+const PlaylistSongsService = require('./services/postgres/PlaylistSongsService');
+const PlaylistSongsValidator = require('./validator/playlistsongs');
+// exports
+const _exports = require('./api/exports');
+const ProducerService = require('./services/rabbitmq/ProducerService');
+const ExportsValidator = require('./validator/exports');
+// uploads
+const uploads = require('./api/uploads');
+const StorageService = require('./services/storage/StorageService');
+const UploadsValidator = require('./validator/uploads');
+// albums-likes
+const albumsLikes = require('./api/albumsLikes');
+const AlbumsLikesService = require('./services/postgres/AlbumsLikesService');
+const CacheService = require('./services/redis/CacheService');
 
 const init = async () => {
+  const cacheService = new CacheService();
   const albumsService = new AlbumsService();
   const songsService = new SongsService();
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
   const playlistService = new PlaylistService();
+  const playlistSongsService = new PlaylistSongsService();
+  const storageService = new StorageService(path.resolve(__dirname, 'api/uploads/file/images'));
+  const albumsLikeService = new AlbumsLikesService(cacheService);
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -44,6 +69,9 @@ const init = async () => {
   await server.register([
     {
       plugin: Jwt,
+    },
+    {
+      plugin: Inert,
     },
   ]);
 
@@ -100,6 +128,37 @@ const init = async () => {
       options: {
         service: playlistService,
         validator: PlaylistValidator,
+      },
+    },
+    {
+      plugin: playlistSongs,
+      options: {
+        playlistSongsService,
+        songsService,
+        playlistService,
+        validator: PlaylistSongsValidator,
+      },
+    },
+    {
+      plugin: _exports,
+      options: {
+        service: ProducerService,
+        playlistService,
+        validator: ExportsValidator,
+      },
+    },
+    {
+      plugin: uploads,
+      options: {
+        service: storageService,
+        albumsService,
+        validator: UploadsValidator,
+      },
+    },
+    {
+      plugin: albumsLikes,
+      options: {
+        service: albumsLikeService,
       },
     },
   ]);
